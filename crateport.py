@@ -3,10 +3,27 @@
 
 import sqlite3
 import sys
+import xml.dom
+import xml.dom.minidom
 
 def generateCrateXML(crates):
+	dom = xml.dom.getDOMImplementation()
+	document = dom.createDocument(None, None, None)
+	ncrates = document.createElement('crates')
+	document.appendChild(ncrates)
+	
 	for cratename in crates:
-		print crates[cratename]
+		ncrate = document.createElement('crate')
+		ncrates.appendChild(ncrate)
+		ncrate.setAttribute('name', cratename)
+		
+		for track in crates[cratename]:
+			ntrack = document.createElement('track')
+			ncrate.appendChild(ntrack)
+			for key in track.keys():
+				ntrack.setAttribute(key, str(track[key]))
+	
+	return document.toxml()
 
 def getCrates(conn):
 	cursor = conn.cursor()
@@ -21,7 +38,8 @@ def getCrates(conn):
 		cur2 = conn.cursor()
 		cur2.execute("""
 			SELECT
-				library.id AS id,
+				library.artist AS artist,
+				library.title AS title,
 				track_locations.location AS filename
 			
 			FROM crate_tracks
