@@ -2,10 +2,13 @@
 #
 
 import sqlite3
+import os
 import sys
 import xml.dom
 import xml.dom.minidom
-from argparse import ArgumentParser
+import platform
+from optparse import OptionParser
+
 
 def generateCrateXML(crates):
 	dom = xml.dom.getDOMImplementation()
@@ -151,22 +154,31 @@ def importCrateXML(conn, dcrate):
 				continue
 
 def main():
-	opt = ArgumentParser(description='Import and Export Crates from Mixxx')
-	opt.add_argument('-i, --import', dest='export', action='store_false', required=False) 
-	opt.add_argument('-e, --export', dest='export', action='store_true', required=False)
-	opt.add_argument('-d, --dbname', dest='dbname', required=False, default='/home/madjester/.mixxx/mixxxdb.sqlite')
-	opt.add_argument('file')
+	home = os.path.expanduser('~')
+	uname = platform.uname()
+	if uname[0] == 'Darwin':
+		cfgdir = home + '/Library/Application Support/Mixxx'
+	elif uname[0] == 'Linux':
+		cfgdir = home + '/.mixxx'
 	
-	args = opt.parse_args()
+	defdb = cfgdir + '/mixxxdb.sqlite'	
+
+	print "Database Name:", defdb
+	opt = OptionParser(description='Import and Export Crates from Mixxx')
+	opt.add_option('-i', '--import', dest='export', action='store_false')
+	opt.add_option('-e', '--export', dest='export', action='store_true')
+	opt.add_option('-d', '--dbname', dest='dbname', default=defdb)
 	
-	conn = sqlite3.connect(args.dbname)
+	(options, args) = opt.parse_args()
+	
+	conn = sqlite3.connect(options.dbname)
 	conn.row_factory = sqlite3.Row
 	
-	if args.export == True:
+	if options.export == True:
 		crates = getCrates(conn)
 		print generateCrateXML(crates)
 	else:
-		crates = xml.dom.minidom.parse(args.file)
+		crates = xml.dom.minidom.parse(args[0])
 		importCrateXML(conn, crates)
 	
 	conn.close()
