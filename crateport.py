@@ -26,7 +26,7 @@ def generateCrateXML(crates):
 			ntrack = document.createElement('track')
 			ncrate.appendChild(ntrack)
 			for key in track.keys():
-				ntrack.setAttribute(key, str(track[key]))
+				ntrack.setAttribute(key, unicode(track[key]))
 	
 	return document.toxml()
 
@@ -181,7 +181,7 @@ def main():
 	if options.export == True:
 		output = open(args[0], "w")  if len(args) > 0 else sys.stdout
 		crates = getCrates(conn)
-		output.write(generateCrateXML(crates) + "\n")
+		output.write(generateCrateXML(crates).encode('utf8') + "\n")
 	else:
 		input = open(args[0], "r") if len(args) > 0 else sys.stdin
 		crates = xml.dom.minidom.parse(input)
