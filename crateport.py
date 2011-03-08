@@ -7,6 +7,7 @@ import sys
 import xml.dom
 import xml.dom.minidom
 import platform
+import fileinput
 from optparse import OptionParser
 
 
@@ -163,7 +164,6 @@ def main():
 	
 	defdb = cfgdir + '/mixxxdb.sqlite'	
 
-	print "Database Name:", defdb
 	opt = OptionParser(description='Import and Export Crates from Mixxx')
 	opt.add_option('-e', '--export', dest='import', action='store_false')
 	opt.add_option('-i', '--import', dest='import', action='store_true')
@@ -175,10 +175,11 @@ def main():
 	conn.row_factory = sqlite3.Row
 	
 	if options.import == False:
+		if len(args) > 0 output = open(args[0], "w") else output = sys.stdin
 		crates = getCrates(conn)
-		print generateCrateXML(crates)
+		print output, generateCrateXML(crates)
 	else:
-		crates = xml.dom.minidom.parse(args[0])
+		crates = xml.dom.minidom.parse(fileinput.input(args))
 		importCrateXML(conn, crates)
 	
 	conn.close()
