@@ -165,16 +165,17 @@ def main():
 
 	print "Database Name:", defdb
 	opt = OptionParser(description='Import and Export Crates from Mixxx')
-	opt.add_option('-e', '--export', dest='import', action='store_false')
-	opt.add_option('-i', '--import', dest='import', action='store_true')
+	opt.add_option('-i', '--import', dest='export', action='store_false')
+	opt.add_option('-e', '--export', dest='export', action='store_true')
 	opt.add_option('-d', '--dbname', dest='dbname', default=defdb)
 	
 	(options, args) = opt.parse_args()
-	
+
+	if options.export == None: options.export = True;	
 	conn = sqlite3.connect(options.dbname)
 	conn.row_factory = sqlite3.Row
 	
-	if options.import == False:
+	if options.export == True:
 		crates = getCrates(conn)
 		print generateCrateXML(crates)
 	else:
