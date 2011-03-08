@@ -147,6 +147,7 @@ def importCrateXML(conn, dcrate):
 			
 			track = findTrack(conn, ntrack)
 			try:
+				print "Adding a Track"
 				cursor.execute("""
 					INSERT INTO crate_tracks(crate_id, track_id)
 					VALUES(?, ?)
@@ -180,9 +181,11 @@ def main():
 		crates = getCrates(conn)
 		output.write(generateCrateXML(crates) + "\n")
 	else:
-		crates = xml.dom.minidom.parse(fileinput.input(args))
+		input = open(args[0], "r") if len(args) > 0 else sys.stdin
+		crates = xml.dom.minidom.parse(input)
 		importCrateXML(conn, crates)
 	
+	conn.commit()
 	conn.close()
 
 if __name__ == '__main__':
