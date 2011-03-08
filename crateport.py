@@ -155,7 +155,7 @@ def importCrateXML(conn, dcrate):
 						VALUES(?, ?)
 					""", (str(crate['id']), track['id']))
 				except sqlite3.IntegrityError:
-					continue
+					print "Track already in crate"
 
 def main():
 	home = os.path.expanduser('~')
