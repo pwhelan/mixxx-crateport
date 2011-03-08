@@ -176,9 +176,9 @@ def main():
 	conn.row_factory = sqlite3.Row
 	
 	if options.export == True:
-		if len(args) > 0 output = open(args[0], "w") else output = sys.stdin
+		output = open(args[0], "w")  if len(args) > 0 else sys.stdout
 		crates = getCrates(conn)
-		print output, generateCrateXML(crates)
+		output.write(generateCrateXML(crates) + "\n")
 	else:
 		crates = xml.dom.minidom.parse(fileinput.input(args))
 		importCrateXML(conn, crates)
