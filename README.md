@@ -1,9 +1,11 @@
-== Introduction ==
+Introduction
+============
 
 This is a simple utility for exporting Crates in Mixxx to an XML file. It will
 also load these same XML files into a Mixxx Library.
 
-=== How to Run ===
+How to Run
+==========
 
 By default, crateport will output the generated XML file to standard input
 (the screen). Just call it like so:
@@ -31,3 +33,4 @@ You can also specify a different Mixxx Library Database File using the '-d' or
 
 If not set explicitly it will use the default Mixxx Library location for your
 platform.
+
