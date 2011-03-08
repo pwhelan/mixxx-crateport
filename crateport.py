@@ -134,26 +134,28 @@ def importCrateXML(conn, dcrate):
 		try:
 			cursor.execute("INSERT INTO crates(name) VALUES(?)", 
 				(ncrate.getAttribute('name'),))
+			print "Creating new Crate:", ncrate.getAttribute('name')
 		except sqlite3.IntegrityError:
-			continue
+			print "Already Created:", ncrate.getAttribute('name')
 		
 		cursor.execute("SELECT id FROM crates WHERE name = ?", 
 			(ncrate.getAttribute('name'),))
-		crateId = cursor.fetchone()
+		crate = cursor.fetchone()
 		
 		for ntrack in ncrate.childNodes:
 			if ncrate.tagName != 'crate':
 				raise Exception('Not a Crate')
 			
 			track = findTrack(conn, ntrack)
-			try:
-				print "Adding a Track"
-				cursor.execute("""
-					INSERT INTO crate_tracks(crate_id, track_id)
-					VALUES(?, ?)
-				""", (str(crateId), track['id']))
-			except sqlite3.IntegrityError:
-				continue
+			if track != None:
+				try:
+					print "Adding a Track"
+					cursor.execute("""
+						INSERT INTO crate_tracks(crate_id, track_id)
+						VALUES(?, ?)
+					""", (str(crate['id']), track['id']))
+				except sqlite3.IntegrityError:
+					continue
 
 def main():
 	home = os.path.expanduser('~')
